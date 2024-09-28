@@ -1,0 +1,1 @@
+/home/bompidom/projects/exploration/HideQR/target/debug/HideQr: /home/bompidom/projects/exploration/HideQR/src/commands.rs /home/bompidom/projects/exploration/HideQR/src/lib.rs /home/bompidom/projects/exploration/HideQR/src/main.rs
