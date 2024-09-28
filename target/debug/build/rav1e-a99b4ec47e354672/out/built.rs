@@ -48,7 +48,7 @@ pub const HOST: &str = r"x86_64-unknown-linux-gnu";
 pub const PROFILE: &str = r"debug";
 #[doc=r#"The compiler that cargo resolved to use."#]
 #[allow(dead_code)]
-pub const RUSTC: &str = r"/home/bompidom/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc";
+pub const RUSTC: &str = r"/home/bompidom/.cargo/bin/rustc";
 #[doc=r#"The documentation generator that cargo resolved to use."#]
 #[allow(dead_code)]
 pub const RUSTDOC: &str = r"/home/bompidom/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustdoc";
@@ -73,7 +73,7 @@ pub const FEATURES_LOWERCASE: [&str; 0] = [];
 #[doc=r#"The feature-string as above, from lowercase strings."#]
 #[allow(dead_code)]
 pub const FEATURES_LOWERCASE_STR: &str = r"";
-#[doc=r#"The output of `/home/bompidom/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc -V`"#]
+#[doc=r#"The output of `/home/bompidom/.cargo/bin/rustc -V`"#]
 #[allow(dead_code)]
 pub const RUSTC_VERSION: &str = r"rustc 1.81.0 (eeb90cda1 2024-09-04)";
 #[doc=r#"The output of `/home/bompidom/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustdoc -V`; empty string if `/home/bompidom/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustdoc -V` failed to execute"#]
