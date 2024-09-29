@@ -719,7 +719,8 @@ dependencies = [
 [[package]]
 name = "qrcodegen"
 version = "1.8.0"
-source = "git+https://github.com/nayuki/QR-Code-generator.git?tag=v1.8.0#720f62bddb7226106071d4728c292cb1df519ceb"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4339fc7a1021c9c1621d87f5e3505f2805c8c105420ba2f2a4df86814590c142"
 
 [[package]]
 name = "quick-error"

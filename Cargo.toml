@@ -11,7 +11,7 @@ keywords = ["QR", "rust", "steganography", "secret", "hide"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-qrcodegen = {git = "https://github.com/nayuki/QR-Code-generator.git", tag = "v1.8.0"}
+qrcodegen = "1.8.0"
 image = "0.25.2"
 rqrr = {git = "https://github.com/bompidom/rqrr.git"}
 tempfile = "3.13.0"
