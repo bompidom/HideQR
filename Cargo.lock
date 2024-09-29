@@ -848,7 +848,7 @@ dependencies = [
 [[package]]
 name = "rqrr"
 version = "0.7.1"
-source = "git+https://github.com/bompidom/rqrr.git#ae7ce146d445c1bf44a3d6f3edb975d105cbfe8c"
+source = "git+https://github.com/bompidom/rqrr.git?tag=v0.7.1#7bb4a12b85a3394ac59c0e9d797c7a53cd3c4919"
 dependencies = [
  "g2p",
  "image",
