@@ -11,6 +11,11 @@ Below is a comparison of a plain QR code (left) and the same code with the secre
 ![Plain QR code, without the hidden message](https://raw.githubusercontent.com/bompidom/HideQR/refs/heads/main/example/plain_qr.png)
 ![Plain QR code, without the hidden message](https://raw.githubusercontent.com/bompidom/HideQR/refs/heads/main/example/qr_with_embedded_message.png)
 
+## Installation with cargo (Linux, macOS, Windows)
+```bash
+cargo install hide_qr
+````
+
 ## Usage
 
 This command line tool allows you to create and read QR-Codes.
