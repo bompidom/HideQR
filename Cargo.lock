@@ -372,7 +372,7 @@ checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
 
 [[package]]
 name = "hide_qr"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "image",
  "qrcodegen",
@@ -719,7 +719,7 @@ dependencies = [
 [[package]]
 name = "qrcodegen"
 version = "1.8.0"
-source = "git+https://github.com/nayuki/QR-Code-generator.git#856ba8a74b48a6b3b32dd86f13b66b61b8579fcd"
+source = "git+https://github.com/nayuki/QR-Code-generator.git?tag=v1.8.0#720f62bddb7226106071d4728c292cb1df519ceb"
 
 [[package]]
 name = "quick-error"
