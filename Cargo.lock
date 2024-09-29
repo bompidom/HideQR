@@ -376,7 +376,7 @@ version = "1.0.0"
 dependencies = [
  "image",
  "qrcodegen",
- "rqrr",
+ "rqrr-altered",
  "tempfile",
 ]
 
@@ -846,9 +846,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "rqrr"
-version = "0.7.1"
-source = "git+https://github.com/bompidom/rqrr.git?rev=ae7ce146d445c1bf44a3d6f3edb975d105cbfe8c#ae7ce146d445c1bf44a3d6f3edb975d105cbfe8c"
+name = "rqrr-altered"
+version = "0.7.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dfce8804c7bf75fcf75b50932e9ec2f08a329b20871793919e274b7e7d1b9488"
 dependencies = [
  "g2p",
  "image",

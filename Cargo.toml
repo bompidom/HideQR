@@ -13,5 +13,5 @@ keywords = ["QR", "rust", "steganography", "secret", "hide"]
 [dependencies]
 qrcodegen = "1.8.0"
 image = "0.25.2"
-rqrr = {git = "https://github.com/bompidom/rqrr.git", rev = "ae7ce146d445c1bf44a3d6f3edb975d105cbfe8c"}
+rqrr-altered = "0.7.2"
 tempfile = "3.13.0"
