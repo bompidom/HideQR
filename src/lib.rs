@@ -2,7 +2,7 @@ use std::{fs, io};
 use std::io::Error;
 use qrcodegen::*;
 use image::{ImageBuffer, RgbImage, Rgb};
-use rqrr-altered::*;
+use rqrr_altered::*;
 use tempfile::NamedTempFile;
 
 //The stenography is based on expanding functionality of Library QrCode
