@@ -1,6 +1,6 @@
 [package]
 name = "hide_qr"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 authors = ["Erion Leka <erionleka1709@gmail.com>"]
 description = "A tool for creating QR codes with hidden messages."
