@@ -1,29 +1,29 @@
-use std::{fs, io};
-use std::io::Error;
+use image::{ImageBuffer, Rgb, RgbImage};
 use qrcodegen::*;
-use image::{ImageBuffer, RgbImage, Rgb};
-use rqrr_altered::*;
+use rqrr::*;
+use std::io::Error;
+use std::{fs, io};
 use tempfile::NamedTempFile;
 
 //The stenography is based on expanding functionality of Library QrCode
 //which firstly lacked fundamental getter Methods, which are expanded by this trait
-pub trait QrCodeFunctionalityExpansion{
+pub trait QrCodeFunctionalityExpansion {
     fn get_modules(&self) -> Vec<bool>;
 }
 
-impl QrCodeFunctionalityExpansion for QrCode{
+impl QrCodeFunctionalityExpansion for QrCode {
     fn get_modules(&self) -> Vec<bool> {
         let mut m: Vec<bool> = vec![];
-        for y in 0 .. self.size() {
-            for x in 0 .. self.size() {
-                m.push(self.get_module(x,y));
+        for y in 0..self.size() {
+            for x in 0..self.size() {
+                m.push(self.get_module(x, y));
             }
         }
         m
     }
 }
 
-pub struct QrExtended{
+pub struct QrExtended {
     data: String,
     inner: QrCode,
     flat_vector_modules: Vec<bool>, //code modules stored as flat vector of booleans
@@ -37,17 +37,15 @@ pub struct QrExtended{
     Modification are hold by wrapper QrExtended, which has QrCode as wrappee.
 */
 impl QrExtended {
-    
     //Constructor wrapping constructor of QRCode library
-    pub fn encode_text(text: &str, ecl: QrCodeEcc) -> Result<Self,DataTooLong> {
-        match QrCode::encode_text(text, ecl){
-            Ok(qr) =>
-                Ok(QrExtended {
-                    data: text.to_string(),
-                    inner: qr,
-                    flat_vector_modules: vec![],
-                    alignment_positions: vec![],
-                }),
+    pub fn encode_text(text: &str, ecl: QrCodeEcc) -> Result<Self, DataTooLong> {
+        match QrCode::encode_text(text, ecl) {
+            Ok(qr) => Ok(QrExtended {
+                data: text.to_string(),
+                inner: qr,
+                flat_vector_modules: vec![],
+                alignment_positions: vec![],
+            }),
             Err(e) => Err(e),
         }
     }
@@ -66,12 +64,20 @@ impl QrExtended {
 
         //embed message length at appropriate location in qr code in bytes
         let mut byte_len_information: Vec<bool> = Self::u8_to_bool_vector(text.len() as u8);
-        
-        for i in 3..7{
-            self.set_module(self.size() - 1, self.size() - i,  byte_len_information.remove(0));
-            self.set_module(self.size() - 2, self.size() - i,  byte_len_information.remove(0));
+
+        for i in 3..7 {
+            self.set_module(
+                self.size() - 1,
+                self.size() - i,
+                byte_len_information.remove(0),
+            );
+            self.set_module(
+                self.size() - 2,
+                self.size() - i,
+                byte_len_information.remove(0),
+            );
         }
-        
+
         //embedding message
         for _ in 0..coords.len() {
             let (x, y) = coords.remove(0);
@@ -93,15 +99,17 @@ impl QrExtended {
     }
 
     fn get_altered_module_at(&self, x: i32, y: i32) -> bool {
-        (0 .. self.size()).contains(&x) && (0 .. self.size()).contains(&y) && self.flat_vector_modules[(y * self.size() + x) as usize]
+        (0..self.size()).contains(&x)
+            && (0..self.size()).contains(&y)
+            && self.flat_vector_modules[(y * self.size() + x) as usize]
     }
 
-    pub fn print_qr_pre_modification(&self){
+    pub fn print_qr_pre_modification(&self) {
         self.print_with(|x, y| self.inner.get_module(x, y));
     }
 
-    pub fn print_qr_post_modification(&self){
-        self.print_with(|x,y| self.get_altered_module_at(x, y));
+    pub fn print_qr_post_modification(&self) {
+        self.print_with(|x, y| self.get_altered_module_at(x, y));
     }
 
     //Helper function to avoid boilerplate code of printing post and pre QR code
@@ -120,19 +128,20 @@ impl QrExtended {
         println!();
     }
 
-    fn size(&self) -> i32{
+    fn size(&self) -> i32 {
         self.inner.size()
     }
 
-    fn version(&self) -> qrcodegen::Version{
+    fn version(&self) -> qrcodegen::Version {
         self.inner.version()
     }
 
-    fn load_pre_modified_code(&mut self){
-        self.flat_vector_modules.append(&mut self.inner.get_modules());
+    fn load_pre_modified_code(&mut self) {
+        self.flat_vector_modules
+            .append(&mut self.inner.get_modules());
     }
 
-    fn set_module(&mut self, x: i32, y: i32, value: bool){
+    fn set_module(&mut self, x: i32, y: i32, value: bool) {
         let index = (y * self.size() + x) as usize;
         self.flat_vector_modules[index] = value;
     }
@@ -150,98 +159,133 @@ impl QrExtended {
         temp_path.push_str(".png");
 
         // Convert bool vector to PNG and handle potential errors
-        self.bool_vector_to_png(&temp_path)
-            .map_err(|e| Error::new(io::ErrorKind::Other, format!("Failed to create PNG: {}", e)))?;
+        self.bool_vector_to_png(&temp_path).map_err(|e| {
+            Error::new(io::ErrorKind::Other, format!("Failed to create PNG: {}", e))
+        })?;
 
         // Prepare check
         let img = image::open(&temp_path)
-            .map_err(|e| Error::new(io::ErrorKind::InvalidData, format!("Failed to open image: {}", e)))?
+            .map_err(|e| {
+                Error::new(
+                    io::ErrorKind::InvalidData,
+                    format!("Failed to open image: {}", e),
+                )
+            })?
             .to_luma8();
 
         let mut img = PreparedImage::prepare(img);
         let grids = img.detect_grids();
 
         // Test readability of original data
-        let (_, content) = grids.first()
+        let (_, content) = grids
+            .first()
             .ok_or_else(|| Error::new(io::ErrorKind::InvalidData, "No grids detected."))?
             .decode()
-            .map_err(|e| Error::new(io::ErrorKind::InvalidData, format!("Failed to decode original data: {}", e)))?;
+            .map_err(|e| {
+                Error::new(
+                    io::ErrorKind::InvalidData,
+                    format!("Failed to decode original data: {}", e),
+                )
+            })?;
 
         if self.data != content {
-            return Err(Error::new(io::ErrorKind::InvalidData, "The original data of QR-code cannot be read."));
+            return Err(Error::new(
+                io::ErrorKind::InvalidData,
+                "The original data of QR-code cannot be read.",
+            ));
         } else {
             println!("The original data is still readable!");
         }
 
         // Test readability of secret data
-        let (_, raw) = grids.first()
+        let (_, raw) = grids
+            .first()
             .ok_or_else(|| Error::new(io::ErrorKind::InvalidData, "No grids detected."))?
             .get_raw_data()
-            .map_err(|e| Error::new(io::ErrorKind::InvalidData, format!("Failed to get raw data: {}", e)))?;
+            .map_err(|e| {
+                Error::new(
+                    io::ErrorKind::InvalidData,
+                    format!("Failed to get raw data: {}", e),
+                )
+            })?;
 
         let reader = Reader::from_raw_data(raw);
         if reader.read() != secret_data {
-            return Err(Error::new(io::ErrorKind::InvalidData, "The secret data of QR-code cannot be read."));
+            return Err(Error::new(
+                io::ErrorKind::InvalidData,
+                "The secret data of QR-code cannot be read.",
+            ));
         } else {
             println!("The secret message is readable!");
         }
 
         // If the original and secret data are readable, delete the temporary QR code
-        fs::remove_file(&temp_path).map_err(|e| Error::new(io::ErrorKind::Other, format!("Failed to delete temporary file: {}", e)))?;
+        fs::remove_file(&temp_path).map_err(|e| {
+            Error::new(
+                io::ErrorKind::Other,
+                format!("Failed to delete temporary file: {}", e),
+            )
+        })?;
 
         Ok(())
     }
 
-        /*
-        Helper Methods for determining if module touchable
+    /*
+    Helper Methods for determining if module touchable
 
-        When inserting a secret code, it is important not to overwrite key QR code patterns.
-        For example, changing the finder patterns (the large squares in the corners) would make it obvious that the code has been modified.
+    When inserting a secret code, it is important not to overwrite key QR code patterns.
+    For example, changing the finder patterns (the large squares in the corners) would make it obvious that the code has been modified.
 
-        To learn more about where these patterns are located, visit:
-        https://scanova.io/blog/qr-code-structure/
-        */
-    fn module_can_be_overwritten(&self, x: i32, y: i32) -> bool{
-        !self.is_finder_pattern(x, y) && !self.is_timing_pattern(x, y) && !self.is_alignment_pattern(x, y) && !self.is_format_pattern(x, y) && !self.is_version_pattern(x, y) && !self.is_length_or_mode_pattern(x, y)
+    To learn more about where these patterns are located, visit:
+    https://scanova.io/blog/qr-code-structure/
+    */
+    fn module_can_be_overwritten(&self, x: i32, y: i32) -> bool {
+        !self.is_finder_pattern(x, y)
+            && !self.is_timing_pattern(x, y)
+            && !self.is_alignment_pattern(x, y)
+            && !self.is_format_pattern(x, y)
+            && !self.is_version_pattern(x, y)
+            && !self.is_length_or_mode_pattern(x, y)
     }
 
-    fn is_finder_pattern(&self, x: i32, y: i32) -> bool{
-        (x < 8 && y < 8) || (x < 8 && y >= self.size() - 8) || (x >= self.size() -8 && y < 8 )
+    fn is_finder_pattern(&self, x: i32, y: i32) -> bool {
+        (x < 8 && y < 8) || (x < 8 && y >= self.size() - 8) || (x >= self.size() - 8 && y < 8)
     }
 
-    fn is_timing_pattern(&self, x: i32, y: i32) -> bool{
+    fn is_timing_pattern(&self, x: i32, y: i32) -> bool {
         x == 6 || y == 6
     }
 
-    fn is_format_pattern(&self, x: i32, y: i32) -> bool{
-        (x == 8 && (y <= 8 || y >= self.size()-8)) || (y == 8 && (x <= 8 || x >= self.size()-8))
+    fn is_format_pattern(&self, x: i32, y: i32) -> bool {
+        (x == 8 && (y <= 8 || y >= self.size() - 8)) || (y == 8 && (x <= 8 || x >= self.size() - 8))
     }
 
     fn is_version_pattern(&self, x: i32, y: i32) -> bool {
-        let bottom_left_version = (0..=5).contains(&x) && (y >= self.size() - 11 && y <= self.size() - 9);
-        let top_right_version = (x >= self.size() - 11 && x <= self.size() - 9) && (0..=5).contains(&y);
+        let bottom_left_version =
+            (0..=5).contains(&x) && (y >= self.size() - 11 && y <= self.size() - 9);
+        let top_right_version =
+            (x >= self.size() - 11 && x <= self.size() - 9) && (0..=5).contains(&y);
 
         bottom_left_version || top_right_version
     }
 
-
-    fn is_alignment_pattern(&self, x: i32, y: i32) -> bool{
+    fn is_alignment_pattern(&self, x: i32, y: i32) -> bool {
         //checking if pixel is within 2 modules in x and y direction of center of alignment pattern
         for coord in &self.alignment_positions {
-            if Self::module_distance(x, coord.0) <= 2 && Self::module_distance(y, coord.1) <= 2{
+            if Self::module_distance(x, coord.0) <= 2 && Self::module_distance(y, coord.1) <= 2 {
                 return true;
             }
         }
 
         false
     }
-    
-    fn is_length_or_mode_pattern(&self, x: i32, y: i32) -> bool{
-        (y >= self.size() - 6 && y <= self.size()) && (x == self.size()-1 || x == self.size() - 2)
+
+    fn is_length_or_mode_pattern(&self, x: i32, y: i32) -> bool {
+        (y >= self.size() - 6 && y <= self.size()) && (x == self.size() - 1 || x == self.size() - 2)
     }
 
-    fn module_distance(x1: i32, x2: i32) -> i32{
-        if x1 >=  x2 {
+    fn module_distance(x1: i32, x2: i32) -> i32 {
+        if x1 >= x2 {
             return x1 - x2;
         }
         x2 - x1
@@ -250,10 +294,9 @@ impl QrExtended {
     fn get_potential_alignment_positions(&self) -> Vec<i32> {
         let mut alignment_pos: Vec<i32> = Vec::new();
 
-        if self.version().value() <= 1{
+        if self.version().value() <= 1 {
             return alignment_pos;
         }
-
 
         let interval: i32 = ((self.version().value() / 7) + 1) as i32;
         let distance: i32 = (4 * self.version().value() + 4) as i32;
@@ -261,7 +304,7 @@ impl QrExtended {
         step = if step % 2 != 0 { step + 1 } else { step }; // rounding step to the next largest even number
 
         alignment_pos.push(6); // push the first value to the vector
-        for i in 1..interval+1 {
+        for i in 1..interval + 1 {
             alignment_pos.push(6 + distance - step * (interval - i));
         }
         alignment_pos
@@ -272,10 +315,11 @@ impl QrExtended {
     Calculating these positions may yield invalid positions that need to be filtered out
     Once calculated the valid positions are stored in "self.alignment_positions" for the lifetime of the QR code
     */
-    fn populate_alignment_positions(&mut self){
+    fn populate_alignment_positions(&mut self) {
         let v = self.get_potential_alignment_positions();
 
-        self.alignment_positions = v.iter()
+        self.alignment_positions = v
+            .iter()
             .flat_map(|&x| v.iter().map(move |&y| (x, y)))
             .filter(|e| !self.is_finder_pattern(e.0, e.1)) //center of potential alignment pattern cannot overlap other patterns
             .collect();
@@ -290,7 +334,7 @@ impl QrExtended {
 
         bits
     }
-    
+
     fn ascii_to_bits(ascii: &str) -> Vec<bool> {
         let mut bits = Vec::new();
 
@@ -311,14 +355,15 @@ impl QrExtended {
             if right == 6 {
                 right = 5; // Skip column 6 (timing pattern)
             }
-            for vert in 0..self.size() { // Iterate vertically through the columns
+            for vert in 0..self.size() {
+                // Iterate vertically through the columns
                 for j in 0..2 {
                     let x = right - j; // Current x-coordinate (either `right` or `right - 1`)
                     let upward = (right + 1) & 2 == 0; // Direction of traversal (upward or downward)
                     let y = if upward { self.size() - 1 - vert } else { vert }; // Compute y based on direction
 
                     // Skip function modules (e.g., finder patterns, alignment patterns)
-                    if  self.module_can_be_overwritten(x, y){
+                    if self.module_can_be_overwritten(x, y) {
                         coords.push((x, y)); // Add (x, y) to the result vector
                     }
                 }
@@ -365,34 +410,36 @@ impl QrExtended {
             }
         }
 
-        img.save(path).map_err(|e| format!("Error: The QR-Code could not be saved at specified path '{}': {}", path, e))?;
+        img.save(path).map_err(|e| {
+            format!(
+                "Error: The QR-Code could not be saved at specified path '{}': {}",
+                path, e
+            )
+        })?;
 
         Ok(())
     }
-    
 }
 
-pub struct Reader{
+pub struct Reader {
     modules: Vec<bool>,
 }
 
-impl Reader{
-    pub fn from_raw_data(raw: RawData) -> Self{
+impl Reader {
+    pub fn from_raw_data(raw: RawData) -> Self {
         let mut bit_vector = Self::bytes_to_bits(&raw.data);
         let len = (Self::bools_to_decimal(&bit_vector[4..12]) * 8) as usize;
         bit_vector.drain(0..12); //are not code
         bit_vector.drain(len..); //drain modules that are not part of secret message
-        
-        Reader{
+
+        Reader {
             modules: bit_vector,
         }
     }
 
-    
-    pub fn read(&self) -> String{
+    pub fn read(&self) -> String {
         Self::bits_to_ascii(&self.modules)
     }
-
 
     fn bools_to_decimal(bits: &[bool]) -> u8 {
         let mut value = 0;
@@ -426,7 +473,8 @@ impl Reader{
                 break;
             }
 
-            let byte = chunk.iter()
+            let byte = chunk
+                .iter()
                 .enumerate()
                 .map(|(i, &bit)| if bit { 1 << (7 - i) } else { 0 })
                 .sum::<u8>();

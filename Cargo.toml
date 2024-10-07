@@ -13,5 +13,5 @@ keywords = ["QR", "rust", "steganography", "secret", "hide"]
 [dependencies]
 qrcodegen = "1.8.0"
 image = "0.25.2"
-rqrr-altered = "0.7.2"
+rqrr = "0.8.0"
 tempfile = "3.13.0"
